@@ -19,15 +19,15 @@ html {
 
 body {
     margin: 0;
-    background: radial-gradient(#9d5900, #3d2200)
+    background: black;
 }
 
 .page-title {
-    color: #ff6d00;
-    font-family: Hallo, serif;
+    color: #ffa661;
+    font-family: Lunacy, serif;
     font-weight: normal; /* unbolds h1 fonts !! */
     text-align: center;
-    font-size: 6em;
+    font-size: 8em;
 }
 
 .game-info-container {
@@ -37,9 +37,9 @@ body {
 }
 
 .game-info {
-    font-family: Lunacy, serif;
+    font-family: Hallo, serif;
     color: #ffbb89;
-    font-size: 4em;
+    font-size: 2em;
 }
 
 .game-container {
@@ -136,8 +136,8 @@ body {
 }
 
 .card-back {
-    background-color: black;
-    border-color: #ff6d00;
+    background-color: #222;
+    border-color: #ffbb89;
 }
 
 .card-front {
