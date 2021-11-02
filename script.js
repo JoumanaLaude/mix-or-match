@@ -23,29 +23,30 @@ class AudioController {
     }
     victory() {
         this.stopMusic();
-        this.victory.play();
+        this.victorySound.play();
     }
-    // gameOver() {
-    //     this.stopMusic();
-    //     this.gameOverSound.play();
-    // }
+    gameOver() {
+        this.stopMusic();
+        // this.gameOverSound.play();
+    }
 }
 
 class MixOrMatch {
     constructor(totalTime, cards) {
         this.cardsArray = cards;
         this.totalTime = totalTime;
+        // ^ properties of the object set from the constructor, the rest is set dynamically
         this.timeRemaining = totalTime;
         this.timer = document.getElementById('time-remaining');
         this.ticker = document.getElementById('flips-remaining');
         this.audioController = new AudioController();
     }
-    startGame() {
+    startGame() { // reset game after win/loss
         this.cardToCheck = null;
         this.totalClicks = 0;
         this.timeRemaining = this.totalTime;
-        this.matchedCards = [];
-        this.busy = true;
+        this.matchedCards = []; // putting in 
+        this.busy = true; // see canFlipCard()
 
         setTimeout(() => {
             this.audioController.startMusic();
@@ -53,11 +54,9 @@ class MixOrMatch {
             this.countDown = this.startCountDown();
             this.busy = false;
         }, 500);
-
         this.hideCards();
         this.timer.innerText = this.timeRemaining;
         this.ticker.innerText = this.totalClicks;
-        // this.shuffleCards();
     }
     hideCards() {
         this.cardsArray.forEach(card => {
@@ -72,8 +71,39 @@ class MixOrMatch {
             this.ticker.innerText = this.totalClicks;
             card.classList.add('visible');
 
-            // if statement for match check
+            if(this.cardToCheck)
+                this.checkForCardMatch(card);
+            else
+                this.cardToCheck = card;
         }
+    }
+    checkForCardMatch(card) {
+        if(this.getCardType(card) === this.getCardType(this.cardToCheck))
+            this.cardMatch(card, this.cardToCheck);
+        else
+            this.cardMisMatch(card, this.cardToCheck);
+
+        this.cardToCheck = null;
+    }
+    cardMatch(card1, card2) {
+        this.matchedCards.push(card1);
+        this.matchedCards.push(card2);
+        card1.classList.add('matched');
+        card2.classList.add('matched');
+        this.audioController.match();
+        if(this.matchedCards.length === this.cardsArray.length)
+            this.victory();
+    }
+    cardMisMatch(card1, card2) {
+        this.busy = true;
+        setTimeout(() => {
+            card1.classList.remove('visible'); // flips the cards back if they dont match
+            card2.classList.remove('visible');
+            this.busy = false;
+        }, 1000) // delays the flip back so user can remember the cards
+    }
+    getCardType(card) {
+        return card.getElementsByClassName('card-value')[0].src;
     }
     startCountDown() {
         return setInterval(() => {
@@ -88,25 +118,29 @@ class MixOrMatch {
         this.audioController.gameOver();
         document.getElementById('game-over-text').classList.add('visible');
     }
+    victory() {
+        clearInterval(this.countDown);
+        this.audioController.victory();
+        document.getElementById('victory-text').classList.add('visible');
+    }
     
     shuffleCards() {
         // fischer yates shuffle algo
         for (let i = this.cardsArray.length - 1; i > 0; i--) {
             let randomIndex = Math.floor(Math.random() * (i + 1));
             this.cardsArray[randomIndex].style.order = i;
-            this.cardsArray[i].style.order = randomIndex;
+            this.cardsArray[i].style.order = randomIndex; // order is from css grid property (order = a number)
         }
     }
     canFlipCard(card) {
-        return true;
-        // return (!this.busy && !this.matchedCards.includes(card) && card !== this.cardToCheck)
+        return !this.busy && !this.matchedCards.includes(card) && card !== this.cardToCheck
     }
 }
 
 function ready() {
     let overlays = Array.from(document.getElementsByClassName('overlay-text'));
     let cards = Array.from(document.getElementsByClassName('card'));
-    let game = new MixOrMatch(3, cards);
+    let game = new MixOrMatch(60, cards);
 
     overlays.forEach(overlay => {
         overlay.addEventListener('click', () => {
@@ -124,7 +158,7 @@ function ready() {
 }
 
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', ready());
+    document.addEventListener('DOMContentLoaded', ready()); // once everything in html file is loaded, ready() is called
 } else {
     ready();
 }
