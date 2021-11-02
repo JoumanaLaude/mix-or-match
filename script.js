@@ -100,7 +100,7 @@ class MixOrMatch {
             card1.classList.remove('visible'); // flips the cards back if they dont match
             card2.classList.remove('visible');
             this.busy = false;
-        }, 1000) // delays the flip back so user can remember the cards
+        }, 600) // delays the flip back so user can remember the cards
     }
     getCardType(card) {
         return card.getElementsByClassName('card-value')[0].src;
@@ -111,7 +111,7 @@ class MixOrMatch {
             this.timer.innerText = this.timeRemaining;
             if(this.timeRemaining === 0)
                 this.gameOver();
-        }, 1000);
+        }, 600);
     }
     gameOver() {
         clearInterval(this.countDown);
